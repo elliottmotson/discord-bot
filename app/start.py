@@ -1,6 +1,10 @@
 import os
 import discord
 import re
+import sys
+import time
+import validators
+from scapy.all import *
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -43,15 +47,31 @@ def settings():
 
 def scan(message):
     message = message.strip("scan ")
-    ipv4 = re.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") # Loads ipv4 regex
-    isipv4 = ipv4.match(message) # Is users message valid ipv4 address
-    if isipv4:
+    if validateIP(message):
         print("Scanning address -",message)
-        results = "OUTPUT OF SCAN"
-        return results
+        ans, unans = sr(IP(dst=message)/ICMP(),timeout = 2)
+        if ans:
+            results = message+" - Online"
+            print(str(ans))
+            return results
+        else:
+            results = message+" - Offline"
+            return results
     else:
-        print("Not IP address")
+        return validateIP(message)
 
+# UTILITY
 
+def validateIP(ip):
+    ipv4 = re.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") # Loads ipv4 regex
+    isipv4 = ipv4.match(ip) # Is users message valid ipv4 address
+    if isipv4:
+        return ip
+    #elif validators.domain(ip):
+    #    print("DOMAIN PARSED: " +ip)
+    #    return ip
+    else:
+        ip = "NOT IP"
+        return ip
 
 client.run(API_KEY)
