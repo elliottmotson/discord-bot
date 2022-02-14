@@ -11,6 +11,8 @@ API_KEY = os.getenv('API_KEY')
 
 client = discord.Client()
 
+# Discord bot events
+
 @client.event
 async def on_ready():
     print(client.user)
@@ -35,7 +37,7 @@ async def on_message(message):
         else:
             await message.reply("Invalid Command")
 
-#MENUS
+# MENUS
 
 def help():
     menu = "HELP MENU\n\n[1] Settings\n[2] Show Log\n[3] Delete Log"
@@ -78,13 +80,11 @@ def validateIP(ip):
         pass
 
 def logChat(user,message):
-    print(str(user) + ": " + message)
-    #generate document
-    #save to disk
-
-    #elif validators.domain(ip):
-    #    print("DOMAIN PARSED: " +ip)
-    #    return ip
+    data = str(user) + ": " + message
+    print(data)
+    with open("./chat.log", "a") as file:
+        file.write(data+"\n")
+        file.close()
 
 
 client.run(API_KEY)
