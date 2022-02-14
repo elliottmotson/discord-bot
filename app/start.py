@@ -90,6 +90,8 @@ def logChat(user,message):
         file.close()
         return True
 
+## PERMISSIONS
+
 def checkuserPermissions(user,scan):
     print("Checking: " + user)
     with open("users.list", "r") as file:
@@ -105,12 +107,15 @@ def checkuserPermissions(user,scan):
             return False
         file.close()
 
-# INIT
-
 def addPermissions(user):
     with open("users.list", "a") as file:
         file.write(user + "\n")
         file.close()
 
+# INIT
 
-client.run(API_KEY)
+def init():
+    client.run(API_KEY)
+
+
+init()
