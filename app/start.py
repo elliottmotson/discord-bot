@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
-
+CHAT_LOG = os.getenv('CHAT_LOG')
 client = discord.Client()
 
 # Discord bot events
@@ -82,8 +82,23 @@ def validateIP(ip):
 def logChat(user,message):
     data = str(user) + ": " + message
     print(data)
-    with open("./chat.log", "a") as file:
+    with open(CHAT_LOG+".log", "a") as file:
         file.write(data+"\n")
+        file.close()
+        return True
+
+def checkuserPermissions(user):
+    with open("users.log", "r") as file:
+        lines = file.readlines()
+        for line in lines:
+            if line == user:
+                return True
+
+# INIT
+
+def addPermissions(user):
+    with open(CHAT_LOG+".log", "a") as file:
+        file.write(user + "\n")
         file.close()
 
 
