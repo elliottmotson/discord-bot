@@ -3,7 +3,6 @@ import discord
 import re
 import sys
 import time
-import validators
 from scapy.all import *
 from dotenv import load_dotenv
 
@@ -20,18 +19,21 @@ async def on_ready():
 async def on_message(message):
     if message.author.bot:
         return
-    if "scan " in message.content:
-        results = scan(message.content)
-        await message.reply(results)
-
-    elif message.content == "help":
-        await message.reply(help())
-
-    elif message.content == "1":
-        results = settings()
-        await message.reply(settings())
     else:
-        await message.reply("Invalid Command")
+        logChat(message.author,message.content)
+
+        if "scan " in message.content:
+            results = scan(message.content)
+            await message.reply(results)
+
+        elif message.content == "help":
+            await message.reply(help())
+
+        elif message.content == "1":
+            results = settings()
+            await message.reply(settings())
+        else:
+            await message.reply("Invalid Command")
 
 #MENUS
 
@@ -58,20 +60,31 @@ def scan(message):
             results = message+" - Offline"
             return results
     else:
-        return validateIP(message)
+        results = "Invalid IP or Domain"
+        return results
 
 # UTILITY
 
 def validateIP(ip):
     ipv4 = re.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") # Loads ipv4 regex
     isipv4 = ipv4.match(ip) # Is users message valid ipv4 address
-    if isipv4:
-        return ip
+    try:
+        if isipv4:
+            return ip
+        else:
+            return ip
+        pass
+    except Exception as e:
+        pass
+
+def logChat(user,message):
+    print(str(user) + ": " + message)
+    #generate document
+    #save to disk
+
     #elif validators.domain(ip):
     #    print("DOMAIN PARSED: " +ip)
     #    return ip
-    else:
-        ip = "NOT IP"
-        return ip
+
 
 client.run(API_KEY)
