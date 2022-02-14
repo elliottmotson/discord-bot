@@ -25,8 +25,11 @@ async def on_message(message):
         logChat(message.author,message.content)
 
         if "scan " in message.content:
-            results = scan(message.content)
-            await message.reply(results)
+            if checkuserPermissions(str(message.author),"scan"):
+                results = scan(message.content)
+                await message.reply(results)
+            else:
+                await message.reply("Permission denied")
 
         elif message.content == "help":
             await message.reply(help())
@@ -87,17 +90,25 @@ def logChat(user,message):
         file.close()
         return True
 
-def checkuserPermissions(user):
-    with open("users.log", "r") as file:
+def checkuserPermissions(user,scan):
+    print("Checking: " + user)
+    with open("users.list", "r") as file:
         lines = file.readlines()
         for line in lines:
-            if line == user:
+            if str(user) in line:
+                message = " executed " + scan
+                logChat(user,message)
                 return True
+        else:
+            message = "DENIED EXECUTION: " + scan
+            logChat(user,message)
+            return False
+        file.close()
 
 # INIT
 
 def addPermissions(user):
-    with open(CHAT_LOG+".log", "a") as file:
+    with open("users.list", "a") as file:
         file.write(user + "\n")
         file.close()
 
