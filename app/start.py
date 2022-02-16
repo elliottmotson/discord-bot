@@ -23,8 +23,13 @@ async def on_message(message):
         return
     else:
         logChat(message.author,message.content)
-
-        if "scan " in message.content:
+        word = "green"
+        if word in message.content:
+            link =
+            text = message.content
+            results = text.replace(word,link)
+            await message.reply(results)
+        elif "scan " in message.content:
             if checkuserPermissions(str(message.author),"scan"):
                 results = scan(message.content)
                 await message.reply(results)
