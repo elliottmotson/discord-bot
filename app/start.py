@@ -23,12 +23,12 @@ async def on_message(message):
         return
     else:
         logChat(message.author,message.content)
-        word = "green"
+
+        word = "google"
         if word in message.content:
-            link =
-            text = message.content
-            results = text.replace(word,link)
-            await message.reply(results)
+            link = "https://google.com"
+            await message.reply(wordReplace(word,link))
+
         elif "scan " in message.content:
             if checkuserPermissions(str(message.author),"scan"):
                 results = scan(message.content)
@@ -42,6 +42,7 @@ async def on_message(message):
         elif message.content == "1":
             results = settings()
             await message.reply(settings())
+
         else:
             await message.reply("Invalid Command")
 
@@ -72,6 +73,17 @@ def scan(message):
     else:
         results = "Invalid IP or Domain"
         return results
+
+# FUN
+
+def wordReplace(word,link):
+    word = "green"
+    if word in message.content:
+        link = "google.com"
+        text = message.content
+        results = text.replace(word,link)
+        return results
+
 
 # UTILITY
 
