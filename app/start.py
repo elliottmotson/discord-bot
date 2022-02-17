@@ -23,14 +23,14 @@ async def on_message(message):
     if message.author.bot:
         return
     else:
-        logChat(message.author,message.content)
+        logChat(message.author,message.content) # Log incoming message
 
-        word = "google"
+        word = "google" # wordReplace functionality
         if word in message.content:
             link = "https://google.com"
             await message.reply(wordReplace(word,link))
 
-        elif "scan " in message.content:
+        elif "scan " in message.content: # Scapy init
             if checkuserPermissions(str(message.author),"scan"):
                 results = scan(message.content)
                 await message.reply(results)
@@ -50,17 +50,18 @@ async def on_message(message):
 
 # MENUS
 
-def help():
+def help(): # Help menu
     menu = "HELP MENU\n\n[1] Settings\n[2] Show Log\n[3] Delete Log"
     return menu
 
-def settings():
+def settings(): # Bot settings menu
     menu = "SETTINGS MENU\n"
     return menu
 
 
 # PORT SCANNER
 
+# ICMP packet to validated IP or domain name
 def scan(message):
     message = message.strip("scan ")
     if validateIP(message):
@@ -91,6 +92,7 @@ def wordReplace(word,link):
 
 # UTILITY
 
+# Validates IP with regex
 def validateIP(ip):
     ipv4 = re.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") # Loads ipv4 regex
     isipv4 = ipv4.match(ip) # Is users message valid ipv4 address
@@ -103,6 +105,7 @@ def validateIP(ip):
     except Exception as e:
         pass
 
+# Logs message to file
 def logChat(user,message):
     data = str(user) + ": " + message
     print(data)
@@ -114,21 +117,23 @@ def logChat(user,message):
 
 ## PERMISSIONS
 
-def checkuserPermissions(user,scan):
+# Checks user in elevated permissions list
+def checkuserPermissions(user,action):
     print("Checking: " + user)
     with open("users.list", "r") as file:
         lines = file.readlines()
         for line in lines:
             if str(user) in line:
-                message = " executed " + scan
+                message = " executed " + action
                 logChat(user,message)
                 return True
         else:
-            message = "DENIED EXECUTION: " + scan
+            message = "DENIED EXECUTION: " + action
             logChat(user,message)
             return False
         file.close()
 
+# Add user to elevated permissions list
 def addPermissions(user):
     with open("users.list", "a") as file:
         file.write(user + "\n")
