@@ -11,6 +11,7 @@ API_KEY = os.getenv('API_KEY')
 CHAT_LOG = os.getenv('CHAT_LOG')
 client = discord.Client()
 
+
 # Discord bot events
 
 @client.event
@@ -46,6 +47,7 @@ async def on_message(message):
         else:
             await message.reply("Invalid Command")
 
+
 # MENUS
 
 def help():
@@ -55,6 +57,7 @@ def help():
 def settings():
     menu = "SETTINGS MENU\n"
     return menu
+
 
 # PORT SCANNER
 
@@ -73,6 +76,7 @@ def scan(message):
     else:
         results = "Invalid IP or Domain"
         return results
+
 
 # FUN
 
@@ -107,6 +111,7 @@ def logChat(user,message):
         file.close()
         return True
 
+
 ## PERMISSIONS
 
 def checkuserPermissions(user,scan):
@@ -128,6 +133,7 @@ def addPermissions(user):
     with open("users.list", "a") as file:
         file.write(user + "\n")
         file.close()
+
 
 # INIT
 
