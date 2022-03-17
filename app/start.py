@@ -19,7 +19,8 @@ client = discord.Client()
 
 # API
 
-def searchAirport(ip):
+def searchAirport(message):
+    ip = message.strip("fly me to ")
     url = "https://aviation-reference-data.p.rapidapi.com/airports/search"
     results = IPToLocation(ip)
     latitude = str(results["latitude"])
@@ -35,7 +36,7 @@ def searchAirport(ip):
     response = requests.request("GET", url, headers=headers, params=querystring)
     print(headers)
     print(response.text)
-
+    return str(response.text)
 
 # Discord bot events
 
@@ -56,11 +57,11 @@ async def on_message(message):
             await message.reply(wordReplace(word,link))
 
         elif "scan " in message.content: # Scapy init
-            if checkuserPermissions(str(message.author),"scan"):
-                results = scan(message.content)
-                await message.reply(results)
-            else:
-                await message.reply("Permission denied")
+            #if checkuserPermissions(str(message.author),"scan"):
+            results = scan(message.content)
+            await message.reply(results)
+            #else:
+            #    await message.reply("Permission denied")
 
         elif message.content == "help":
             await message.reply(help())
@@ -68,6 +69,13 @@ async def on_message(message):
         elif message.content == "1":
             results = settings()
             await message.reply(settings())
+
+        elif "fly me to " in message.content: # Scapy init
+            #if checkuserPermissions(str(message.author),"fly me to "):
+            results = searchAirport(message.content)
+            await message.reply(results)
+            #else:
+            #    await message.reply("Permission denied")
 
         else:
             await message.reply("Invalid Command")
@@ -158,7 +166,7 @@ def IPToLocation(ip):
 # Checks user in elevated permissions list
 def checkuserPermissions(user,action):
     print("Checking: " + user)
-    with open("users.list", "r") as file:
+    with open("/users.list", "r") as file:
         lines = file.readlines()
         for line in lines:
             if str(user) in line:
@@ -181,8 +189,6 @@ def addPermissions(user):
 # INIT
 
 def init():
-    ip = "185.195.232.174"
-    searchAirport(ip)
     client.run(API_KEY)
 
 
