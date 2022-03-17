@@ -19,11 +19,11 @@ client = discord.Client()
 
 # API
 
-def searchAirport():
+def searchAirport(ip):
     url = "https://aviation-reference-data.p.rapidapi.com/airports/search"
-
-    latitude = "54.978252"
-    longitude = "-1.61778"
+    results = IPToLocation(ip)
+    latitude = str(results["latitude"])
+    longitude = str(results["longitude"])
     radius = "100" # Miles around latlong
     querystring = {"lat":latitude,"lon":longitude,"radius":radius}
     print(querystring)
@@ -142,10 +142,16 @@ def logChat(user,message):
 # Get MaxMind latlong from ip
 
 def IPToLocation(ip):
-    url = ("https://api.ipgeolocation.io/ipgeo?apiKey="+IP_GEOLOCATION_API+"&ip="+ip+"&fields=city")
+    url = "https://api.ipgeolocation.io/ipgeo?apiKey="+IP_GEOLOCATION_API+"&ip="+ip#+"&fields=city"
     response = requests.request("GET", url)
-    print(response.text)
-    return True
+    data = response.text
+    parsed = json.loads(data)
+    results  = {
+    "city":parsed["city"],
+    "latitude":parsed["latitude"],
+    "longitude":parsed["longitude"]
+    }
+    return results
 
 ## PERMISSIONS
 
@@ -175,9 +181,8 @@ def addPermissions(user):
 # INIT
 
 def init():
-    ip = "8.8.8.8"
-    IPToLocation(ip)
-    searchAirport()
+    ip = "185.195.232.174"
+    searchAirport(ip)
     client.run(API_KEY)
 
 
