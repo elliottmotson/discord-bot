@@ -3,13 +3,38 @@ import discord
 import re
 import sys
 import time
+import requests
+import json
 from scapy.all import *
 from dotenv import load_dotenv
 
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
 CHAT_LOG = os.getenv('CHAT_LOG')
+RAPID_API_AVIATION_KEY = os.getenv('RAPID_API_AVIATION_KEY')
+IP_GEOLOCATION_API = os.getenv('IP_GEOLOCATION_API')
+
 client = discord.Client()
+
+
+# API
+
+def searchAirport():
+    url = "https://aviation-reference-data.p.rapidapi.com/airports/search"
+
+    latitude = "54.978252"
+    longitude = "-1.61778"
+    radius = "100" # Miles around latlong
+    querystring = {"lat":latitude,"lon":longitude,"radius":radius}
+    print(querystring)
+    headers = {
+        'x-rapidapi-host': "aviation-reference-data.p.rapidapi.com",
+        'x-rapidapi-key': RAPID_API_AVIATION_KEY,
+        }
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    print(headers)
+    print(response.text)
 
 
 # Discord bot events
@@ -90,7 +115,7 @@ def wordReplace(word,link):
         return results
 
 
-# UTILITY
+## UTILITY
 
 # Validates IP with regex
 def validateIP(ip):
@@ -114,6 +139,13 @@ def logChat(user,message):
         file.close()
         return True
 
+# Get MaxMind latlong from ip
+
+def IPToLocation(ip):
+    url = ("https://api.ipgeolocation.io/ipgeo?apiKey="+IP_GEOLOCATION_API+"&ip="+ip+"&fields=city")
+    response = requests.request("GET", url)
+    print(response.text)
+    return True
 
 ## PERMISSIONS
 
@@ -143,6 +175,9 @@ def addPermissions(user):
 # INIT
 
 def init():
+    ip = "8.8.8.8"
+    IPToLocation(ip)
+    searchAirport()
     client.run(API_KEY)
 
 
