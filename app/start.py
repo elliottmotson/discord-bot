@@ -70,7 +70,7 @@ async def on_message(message):
             results = settings()
             await message.reply(settings())
 
-        elif "fly me to " in message.content: # Scapy init
+        elif "fly me to " in message.content: # searchAirport init
             #if checkuserPermissions(str(message.author),"fly me to "):
             results = searchAirport(message.content)
             await message.reply(results)
