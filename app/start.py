@@ -13,9 +13,12 @@ API_KEY = os.getenv('API_KEY')
 CHAT_LOG = os.getenv('CHAT_LOG')
 RAPID_API_AVIATION_KEY = os.getenv('RAPID_API_AVIATION_KEY')
 IP_GEOLOCATION_API = os.getenv('IP_GEOLOCATION_API')
+botID = os.getenv('BOT_ID')
+DISCORD_GUILD = os.getenv('DISCORD_GUILD')
+
 
 client = discord.Client()
-
+botChannel = "bot" + str(botID)
 
 # API
 
