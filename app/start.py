@@ -43,9 +43,15 @@ def searchAirport(message):
     print(headers)
     #print(response.text)
     data = json.loads(response.text)
-    print(data)
+    count = 0
 
-    return str("[DEBUG] Success!")
+    airportName = (data[count]["name"])
+    airportCountry = (data[count]["alpha2countryCode"])
+
+    print("IP: ",ip,"\nAIRPORT NAME: ",airportName,"\nCountry: ",airportCountry)
+
+    results = ("NEAREST AIRPORT TO " + ip + " - " + airportName + " in " + airportCountry)
+    return str(results)
 
 # Discord bot events
 
