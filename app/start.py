@@ -16,6 +16,32 @@ IP_GEOLOCATION_API = os.getenv('IP_GEOLOCATION_API')
 
 client = discord.Client()
 
+## Available Commands
+
+## fly me to %%VALID IP%%
+
+# Takes valid ip adress argument
+# Returns list of airports closest to valid ip expected geolocation
+
+## scan %%VALID IP%%
+
+# Sends ICMP packet to target IP and prints response as %%VALID IP%% (Online) or %%VALID IP%% (Offline)
+
+## help
+
+# Loads README
+
+## 1
+
+# Prints settings page to user, giving further options
+
+## %%Message contains "Google"%%
+
+# Replaces "Google" with "https://google.com"
+
+## NO VALID COMMAND
+
+# Prints "Invalid Command"
 
 # API
 
@@ -63,7 +89,7 @@ async def on_message(message):
             #else:
             #    await message.reply("Permission denied")
 
-        elif message.content == "help":
+        elif message.content == "help": #TOTO: README FROM FILE
             await message.reply(help())
 
         elif message.content == "1":
