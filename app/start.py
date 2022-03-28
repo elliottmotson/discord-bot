@@ -20,6 +20,9 @@ DISCORD_GUILD = os.getenv('DISCORD_GUILD')
 client = discord.Client()
 botChannel = "bot" + str(botID)
 
+
+
+
 # API
 
 def searchAirport(message):
@@ -38,8 +41,11 @@ def searchAirport(message):
 
     response = requests.request("GET", url, headers=headers, params=querystring)
     print(headers)
-    print(response.text)
-    return str(response.text)
+    #print(response.text)
+    data = json.loads(response.text)
+    print(data)
+
+    return str("[DEBUG] Success!")
 
 # Discord bot events
 
@@ -49,39 +55,43 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author.bot:
+
+    if message.channel.name != botChannel: # Only replies to messages sent in botChannel
         return
     else:
-        logChat(message.author,message.content) # Log incoming message
-
-        word = "google" # wordReplace functionality
-        if word in message.content:
-            link = "https://google.com"
-            await message.reply(wordReplace(word,link))
-
-        elif "scan " in message.content: # Scapy init
-            #if checkuserPermissions(str(message.author),"scan"):
-            results = scan(message.content)
-            await message.reply(results)
-            #else:
-            #    await message.reply("Permission denied")
-
-        elif message.content == "help":
-            await message.reply(help())
-
-        elif message.content == "1":
-            results = settings()
-            await message.reply(settings())
-
-        elif "fly me to " in message.content: # searchAirport init
-            #if checkuserPermissions(str(message.author),"fly me to "):
-            results = searchAirport(message.content)
-            await message.reply(results)
-            #else:
-            #    await message.reply("Permission denied")
-
+        if message.author.bot:  # Bot doesn't reply to itself
+            return
         else:
-            await message.reply("Invalid Command")
+            logChat(message.author,message.content) # Log incoming message
+
+            word = "google" # wordReplace functionality
+            if word in message.content:
+                link = "https://google.com"
+                await message.reply(wordReplace(word,link))
+
+            elif "scan " in message.content: # Scapy init
+                #if checkuserPermissions(str(message.author),"scan"):
+                results = scan(message.content)
+                await message.reply(results)
+                #else:
+                #    await message.reply("Permission denied")
+
+            elif message.content == "help":
+                await message.reply(help())
+
+            elif message.content == "1":
+                results = settings()
+                await message.reply(settings())
+
+            elif "fly me to " in message.content: # searchAirport init
+                #if checkuserPermissions(str(message.author),"fly me to "):
+                results = searchAirport(message.content)
+                await message.reply(results)
+                #else:
+                #    await message.reply("Permission denied")
+
+            else:
+                await message.reply("Invalid Command")
 
 
 # MENUS
