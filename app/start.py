@@ -3,14 +3,55 @@ import discord
 import re
 import sys
 import time
+import requests
+import json
 from scapy.all import *
 from dotenv import load_dotenv
 
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
 CHAT_LOG = os.getenv('CHAT_LOG')
-client = discord.Client()
+RAPID_API_AVIATION_KEY = os.getenv('RAPID_API_AVIATION_KEY')
+IP_GEOLOCATION_API = os.getenv('IP_GEOLOCATION_API')
+botID = os.getenv('BOT_ID')
+DISCORD_GUILD = os.getenv('DISCORD_GUILD')
 
+
+client = discord.Client()
+botChannel = "bot" + str(botID)
+
+
+
+
+# API
+
+def searchAirport(message):
+    ip = message.strip("fly me to ")
+    url = "https://aviation-reference-data.p.rapidapi.com/airports/search"
+    results = IPToLocation(ip)
+    latitude = str(results["latitude"])
+    longitude = str(results["longitude"])
+    radius = "100" # Miles around latlong
+    querystring = {"lat":latitude,"lon":longitude,"radius":radius}
+    print(querystring)
+    headers = {
+        'x-rapidapi-host': "aviation-reference-data.p.rapidapi.com",
+        'x-rapidapi-key': RAPID_API_AVIATION_KEY,
+        }
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    print(headers)
+    #print(response.text)
+    data = json.loads(response.text)
+    count = 0
+
+    airportName = (data[count]["name"])
+    airportCountry = (data[count]["alpha2countryCode"])
+
+    print("IP: ",ip,"\nAIRPORT NAME: ",airportName,"\nCountry: ",airportCountry)
+
+    results = ("NEAREST AIRPORT TO " + ip + " - " + airportName + " in " + airportCountry)
+    return str(results)
 
 # Discord bot events
 
@@ -20,32 +61,43 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author.bot:
+
+    if message.channel.name != botChannel: # Only replies to messages sent in botChannel
         return
     else:
-        logChat(message.author,message.content) # Log incoming message
+        if message.author.bot:  # Bot doesn't reply to itself
+            return
+        else:
+            logChat(message.author,message.content) # Log incoming message
 
-        word = "google" # wordReplace functionality
-        if word in message.content:
-            link = "https://google.com"
-            await message.reply(wordReplace(word,link))
+            word = "google" # wordReplace functionality
+            if word in message.content:
+                link = "https://google.com"
+                await message.reply(wordReplace(word,link))
 
-        elif "scan " in message.content: # Scapy init
-            if checkuserPermissions(str(message.author),"scan"):
+            elif "scan " in message.content: # Scapy init
+                #if checkuserPermissions(str(message.author),"scan"):
                 results = scan(message.content)
                 await message.reply(results)
+                #else:
+                #    await message.reply("Permission denied")
+
+            elif message.content == "help":
+                await message.reply(help())
+
+            elif message.content == "1":
+                results = settings()
+                await message.reply(settings())
+
+            elif "fly me to " in message.content: # searchAirport init
+                #if checkuserPermissions(str(message.author),"fly me to "):
+                results = searchAirport(message.content)
+                await message.reply(results)
+                #else:
+                #    await message.reply("Permission denied")
+
             else:
-                await message.reply("Permission denied")
-
-        elif message.content == "help":
-            await message.reply(help())
-
-        elif message.content == "1":
-            results = settings()
-            await message.reply(settings())
-
-        else:
-            await message.reply("Invalid Command")
+                await message.reply("Invalid Command")
 
 
 # MENUS
@@ -90,7 +142,7 @@ def wordReplace(word,link):
         return results
 
 
-# UTILITY
+## UTILITY
 
 # Validates IP with regex
 def validateIP(ip):
@@ -114,13 +166,26 @@ def logChat(user,message):
         file.close()
         return True
 
+# Get MaxMind latlong from ip
+
+def IPToLocation(ip):
+    url = "https://api.ipgeolocation.io/ipgeo?apiKey="+IP_GEOLOCATION_API+"&ip="+ip#+"&fields=city"
+    response = requests.request("GET", url)
+    data = response.text
+    parsed = json.loads(data)
+    results  = {
+    "city":parsed["city"],
+    "latitude":parsed["latitude"],
+    "longitude":parsed["longitude"]
+    }
+    return results
 
 ## PERMISSIONS
 
 # Checks user in elevated permissions list
 def checkuserPermissions(user,action):
     print("Checking: " + user)
-    with open("users.list", "r") as file:
+    with open("/users.list", "r") as file:
         lines = file.readlines()
         for line in lines:
             if str(user) in line:
