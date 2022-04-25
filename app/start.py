@@ -91,7 +91,6 @@ async def on_message(message):
     if message.channel.name != botChannel: # Only replies to messages sent in botChannel
         return
     else:
-<<<<<<< HEAD
         logChat(message.author,message.content) # Log incoming message
 
         word = "google" # wordReplace functionality
@@ -120,10 +119,6 @@ async def on_message(message):
             #else:
             #    await message.reply("Permission denied")
 
-=======
-        if message.author.bot:  # Bot doesn't reply to itself
-            return
->>>>>>> b99a344e89c1a5de4790aa4a866d41171717090c
         else:
             logChat(message.author,message.content) # Log incoming message
 
