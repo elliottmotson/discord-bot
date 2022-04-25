@@ -13,8 +13,14 @@ API_KEY = os.getenv('API_KEY')
 CHAT_LOG = os.getenv('CHAT_LOG')
 RAPID_API_AVIATION_KEY = os.getenv('RAPID_API_AVIATION_KEY')
 IP_GEOLOCATION_API = os.getenv('IP_GEOLOCATION_API')
+botID = os.getenv('BOT_ID')
+DISCORD_GUILD = os.getenv('DISCORD_GUILD')
+
 
 client = discord.Client()
+botChannel = "bot" + str(botID)
+
+
 
 ## Available Commands
 
@@ -61,8 +67,17 @@ def searchAirport(message):
 
     response = requests.request("GET", url, headers=headers, params=querystring)
     print(headers)
-    print(response.text)
-    return str(response.text)
+    #print(response.text)
+    data = json.loads(response.text)
+    count = 0
+
+    airportName = (data[count]["name"])
+    airportCountry = (data[count]["alpha2countryCode"])
+
+    print("IP: ",ip,"\nAIRPORT NAME: ",airportName,"\nCountry: ",airportCountry)
+
+    results = ("NEAREST AIRPORT TO " + ip + " - " + airportName + " in " + airportCountry)
+    return str(results)
 
 # Discord bot events
 
@@ -72,9 +87,11 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author.bot:
+
+    if message.channel.name != botChannel: # Only replies to messages sent in botChannel
         return
     else:
+<<<<<<< HEAD
         logChat(message.author,message.content) # Log incoming message
 
         word = "google" # wordReplace functionality
@@ -103,8 +120,41 @@ async def on_message(message):
             #else:
             #    await message.reply("Permission denied")
 
+=======
+        if message.author.bot:  # Bot doesn't reply to itself
+            return
+>>>>>>> b99a344e89c1a5de4790aa4a866d41171717090c
         else:
-            await message.reply("Invalid Command")
+            logChat(message.author,message.content) # Log incoming message
+
+            word = "google" # wordReplace functionality
+            if word in message.content:
+                link = "https://google.com"
+                await message.reply(wordReplace(word,link))
+
+            elif "scan " in message.content: # Scapy init
+                #if checkuserPermissions(str(message.author),"scan"):
+                results = scan(message.content)
+                await message.reply(results)
+                #else:
+                #    await message.reply("Permission denied")
+
+            elif message.content == "help":
+                await message.reply(help())
+
+            elif message.content == "1":
+                results = settings()
+                await message.reply(settings())
+
+            elif "fly me to " in message.content: # searchAirport init
+                #if checkuserPermissions(str(message.author),"fly me to "):
+                results = searchAirport(message.content)
+                await message.reply(results)
+                #else:
+                #    await message.reply("Permission denied")
+
+            else:
+                await message.reply("Invalid Command")
 
 
 # MENUS
