@@ -19,7 +19,7 @@ DISCORD_GUILD = os.getenv('DISCORD_GUILD')
 
 
 client = discord.Client()
-botChannel = "bot" + str(25)
+botChannel = "bot" + str(botID)
 
 
 
@@ -27,7 +27,7 @@ botChannel = "bot" + str(25)
 # API
 
 def searchAirport(message):
-    ip = message.replace("fly me to","")
+    ip = message.replace("fly me to ","")
     url = "https://aviation-reference-data.p.rapidapi.com/airports/search"
     ip = validateIP(ip)
     results = IPToLocation(ip)
