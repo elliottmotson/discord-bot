@@ -3,6 +3,7 @@ import discord
 import re
 import sys
 import time
+import socket
 import requests
 import json
 from scapy.all import *
@@ -26,8 +27,9 @@ botChannel = "bot" + str(botID)
 # API
 
 def searchAirport(message):
-    ip = message.strip("fly me to ")
+    ip = message.replace("fly me to ","")
     url = "https://aviation-reference-data.p.rapidapi.com/airports/search"
+    ip = validateIP(ip)
     results = IPToLocation(ip)
     latitude = str(results["latitude"])
     longitude = str(results["longitude"])
@@ -38,7 +40,6 @@ def searchAirport(message):
         'x-rapidapi-host': "aviation-reference-data.p.rapidapi.com",
         'x-rapidapi-key': RAPID_API_AVIATION_KEY,
         }
-
     response = requests.request("GET", url, headers=headers, params=querystring)
     print(headers)
     #print(response.text)
@@ -70,10 +71,10 @@ async def on_message(message):
         else:
             logChat(message.author,message.content) # Log incoming message
 
-            word = "google" # wordReplace functionality
+            word = "onions" # wordReplace functionality
             if word in message.content:
-                link = "https://google.com"
-                await message.reply(wordReplace(word,link))
+                link = "cheese"
+                await message.reply(wordReplace(word,link,message))
 
             elif "scan " in message.content: # Scapy init
                 #if checkuserPermissions(str(message.author),"scan"):
@@ -91,7 +92,7 @@ async def on_message(message):
 
             elif "fly me to " in message.content: # searchAirport init
                 #if checkuserPermissions(str(message.author),"fly me to "):
-                results = searchAirport(message.content)
+                results = searchAirport(str(message.content))
                 await message.reply(results)
                 #else:
                 #    await message.reply("Permission denied")
@@ -133,13 +134,15 @@ def scan(message):
 
 # FUN
 
-def wordReplace(word,link):
+def wordReplace(word,link,message):
     word = "green"
     if word in message.content:
-        link = "google.com"
+        link = "cheese"
         text = message.content
         results = text.replace(word,link)
         return results
+    else:
+        return "Invalid word"
 
 
 ## UTILITY
@@ -147,15 +150,22 @@ def wordReplace(word,link):
 # Validates IP with regex
 def validateIP(ip):
     ipv4 = re.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") # Loads ipv4 regex
+    domain = re.compile("^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$") # Regex to match most domains
+    isdomain = domain.match(ip)
     isipv4 = ipv4.match(ip) # Is users message valid ipv4 address
     try:
         if isipv4:
             return ip
-        else:
-            return ip
+        elif isdomain:
+            print("IP",str(domaintoip(ip)))
+            return str(domaintoip(ip))
         pass
     except Exception as e:
         pass
+
+def domaintoip(ip):
+    print("CHECKING", ip)
+    return str(socket.gethostbyname(ip))
 
 # Logs message to file
 def logChat(user,message):
