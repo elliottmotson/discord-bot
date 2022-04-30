@@ -12,14 +12,15 @@ from dotenv import load_dotenv
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
 CHAT_LOG = os.getenv('CHAT_LOG')
-RAPID_API_AVIATION_KEY = os.getenv('RAPID_API_AVIATION_KEY')
-IP_GEOLOCATION_API = os.getenv('IP_GEOLOCATION_API')
-botID = os.getenv('BOT_ID')
+BOT_ID = os.getenv('BOT_ID')
 DISCORD_GUILD = os.getenv('DISCORD_GUILD')
 
+IP_GEOLOCATION_API_KEY = os.getenv('IP_GEOLOCATION_API_KEY')
+RAPID_API_AVIATION_KEY = os.getenv('RAPID_API_AVIATION_KEY')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 client = discord.Client()
-botChannel = "bot" + str(botID)
+botChannel = "bot" + str(BOT_ID)
 
 
 
@@ -77,18 +78,19 @@ async def on_message(message):
                 await message.reply(wordReplace(word,link,message))
 
             elif "scan " in message.content: # Scapy init
-                #if checkuserPermissions(str(message.author),"scan"):
+                if checkuserPermissions(str(message.author),"scan"):
                 results = scan(message.content)
                 await message.reply(results)
-                #else:
-                #    await message.reply("Permission denied")
+                else:
+                    await message.reply("Permission denied")
 
             elif message.content == "help":
                 await message.reply(help())
 
             elif message.content == "1":
-                results = settings()
-                await message.reply(settings())
+                while settings(message):
+                    pass
+                await message.reply("Exit settings")
 
             elif "fly me to " in message.content: # searchAirport init
                 #if checkuserPermissions(str(message.author),"fly me to "):
@@ -107,8 +109,9 @@ def help(): # Help menu
     menu = "HELP MENU\n\n[1] Settings\n[2] Show Log\n[3] Delete Log"
     return menu
 
-def settings(): # Bot settings menu
-    menu = "SETTINGS MENU\n"
+def settings(message): # Bot settings menu
+    input(f"OpenAI Key: {OPENAI_API_KEY}") = OPENAI_API_KEY_CHOICE
+    if message.content == "1"
     return menu
 
 
@@ -179,7 +182,7 @@ def logChat(user,message):
 # Get MaxMind latlong from ip
 
 def IPToLocation(ip):
-    url = "https://api.ipgeolocation.io/ipgeo?apiKey="+IP_GEOLOCATION_API+"&ip="+ip#+"&fields=city"
+    url = "https://api.ipgeolocation.io/ipgeo?apiKey="+IP_GEOLOCATION_API_KEY+"&ip="+ip#+"&fields=city"
     response = requests.request("GET", url)
     data = response.text
     parsed = json.loads(data)
