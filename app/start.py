@@ -6,6 +6,7 @@ import time
 import socket
 import requests
 import json
+import openai
 from scapy.all import *
 from dotenv import load_dotenv
 
@@ -18,13 +19,29 @@ DISCORD_GUILD = os.getenv('DISCORD_GUILD')
 IP_GEOLOCATION_API_KEY = os.getenv('IP_GEOLOCATION_API_KEY')
 RAPID_API_AVIATION_KEY = os.getenv('RAPID_API_AVIATION_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-
+openai.api_key = OPENAI_API_KEY
 
 
 client = discord.Client()
 botChannel = "bot" + str(BOT_ID)
 
-
+def ai(text):
+    response = openai.Completion.create(
+    engine="text-davinci-002",
+    prompt=text,
+    temperature=0.4,
+    max_tokens=60,
+    top_p=1,
+    frequency_penalty=0.5,
+    presence_penalty=0,
+    stop=["You:"]
+    )
+    print(response)
+    content = response.choices[0]
+    content = content.text.replace("?","")
+    content = content.strip()
+    print(content)
+    return content
 
 
 # API
@@ -99,6 +116,7 @@ async def on_message(message):
 #                await message.reply("Permission denied")
 
         # OPENAI
+        # Call openai using . operator - Example command: .Tell me a story
         # openai setkey $KEY$ // Sets openai key
         # openai showkey // Displays current openai key
         # openai disable // Disables openai functionality
@@ -111,6 +129,8 @@ async def on_message(message):
                 await message.reply(f"OPENAI KEY: {os.getenv('OPENAI_API_KEY')}")
             elif message.content in "openai disable":
                 await message.reply("OPENAI DISABLED - FEATURE TO BE COMPLETED")
+            elif message.content.startswith("."):
+                await message.reply(ai(message.content))
 
 
         # IP GEOLOCATION
@@ -184,7 +204,6 @@ def scan(message):
     else:
         results = "Invalid IP or Domain"
         return results
-
 
 # FUN
 
