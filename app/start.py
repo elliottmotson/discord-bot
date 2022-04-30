@@ -19,6 +19,8 @@ IP_GEOLOCATION_API_KEY = os.getenv('IP_GEOLOCATION_API_KEY')
 RAPID_API_AVIATION_KEY = os.getenv('RAPID_API_AVIATION_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
+
+
 client = discord.Client()
 botChannel = "bot" + str(BOT_ID)
 
@@ -71,7 +73,6 @@ async def on_message(message):
             return
         else:
             logChat(message.author,message.content) # Log incoming message
-
             word = "onions" # wordReplace functionality
             if word in message.content:
                 link = "cheese"
@@ -79,8 +80,8 @@ async def on_message(message):
 
             elif "scan " in message.content: # Scapy init
                 if checkuserPermissions(str(message.author),"scan"):
-                results = scan(message.content)
-                await message.reply(results)
+                    results = scan(message.content)
+                    await message.reply(results)
                 else:
                     await message.reply("Permission denied")
 
@@ -88,9 +89,7 @@ async def on_message(message):
                 await message.reply(help())
 
             elif message.content == "1":
-                while settings(message):
-                    pass
-                await message.reply("Exit settings")
+                await settings(message)
 
             elif "fly me to " in message.content: # searchAirport init
                 #if checkuserPermissions(str(message.author),"fly me to "):
@@ -99,6 +98,51 @@ async def on_message(message):
                 #else:
                 #    await message.reply("Permission denied")
 
+        # OPENAI
+        # openai setkey $KEY$ // Sets openai key
+        # openai showkey // Displays current openai key
+        # openai disable // Disables openai functionality
+
+            elif message.content in "openai setkey ":
+                message.content.replace("openai setkey","")
+                OPENAI_API_KEY = message.content
+                await message.reply(f"OPENAI KEY CHANGE TO: {os.getenv('OPENAI_API_KEY')}")
+            elif message.content in "openai showkey":
+                await message.reply(f"OPENAI KEY: {os.getenv('OPENAI_API_KEY')}")
+            elif message.content in "openai disable":
+                await message.reply("OPENAI DISABLED - FEATURE TO BE COMPLETED")
+
+
+        # IP GEOLOCATION
+        # ipgeo setkey $KEY$ // Sets ipgeo key
+        # ipgeo showkey // Displays current ipgeo key
+        # ipgeo disable // Disables ipgeo functionality
+
+
+            elif message.content in "ipgeo setkey ":
+                message.content.replace("ipgeo setkey","")
+                IP_GEOLOCATION_API_KEY = message.content
+                await message.reply(f"IPGEO KEY CHANGE TO: {os.getenv('IP_GEOLOCATION_API_KEY')}")
+            elif message.content in "ipgeo showkey":
+                await message.reply(f"IPGEO KEY: {os.getenv('IP_GEOLOCATION_API_KEY')}")
+            elif message.content in "IPGEO disable":
+                await message.reply("IPGEO DISABLED - FEATURE TO BE COMPLETED")
+
+
+        # RAPID API
+        # rapidapi setkey $KEY$ // Sets rapidapi key
+        # rapidapi showkey // Displays current rapidapi key
+        # rapidapi disable // Disables openai functionality
+
+
+            elif message.content in "rapidapi setkey ":
+                message.content.replace("rapidapi setkey","")
+                RAPID_API_AVIATION_KEY = message.content
+                await message.reply(f"RAPIDAPI KEY CHANGE TO: {os.getenv('RAPID_API_AVIATION_KEY')}")
+            elif message.content in "rapidapi showkey":
+                await message.reply(f"RAPIDAPI KEY: {os.getenv('RAPID_API_AVIATION_KEY')}")
+            elif message.content in "rapidapi disable":
+                await message.reply("RAPIDAPI DISABLED - FEATURE TO BE COMPLETED")
             else:
                 await message.reply("Invalid Command")
 
@@ -109,10 +153,21 @@ def help(): # Help menu
     menu = "HELP MENU\n\n[1] Settings\n[2] Show Log\n[3] Delete Log"
     return menu
 
-def settings(message): # Bot settings menu
-    input(f"OpenAI Key: {OPENAI_API_KEY}") = OPENAI_API_KEY_CHOICE
-    if message.content == "1"
-    return menu
+
+# Settings commands
+
+
+# IP GEOLOCATION
+
+
+async def settings(message): # Bot settings menu
+    await message.reply("* SETTINGS *")
+    await message.reply("# OPENAI\n# openai setkey $KEY$ // Sets openai key\n# openai showkey // Displays current openai key\n# openai disable // Disables openai functionality"
+)
+    await message.reply("# IP GEOLOCATION\n# ipgeo setkey $KEY$ // Sets ipgeo key\n# ipgeo showkey // Displays current ipgeo key\n# ipgeo disable // Disables ipgeo functionality"
+)
+    await message.reply("# RAPID API\n# rapidapi setkey $KEY$ // Sets rapidapi key\n# rapidapi showkey // Displays current rapidapi key\n# rapidapi disable // Disables openai functionality"
+)
 
 
 # PORT SCANNER
