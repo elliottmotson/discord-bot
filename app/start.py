@@ -92,11 +92,11 @@ async def on_message(message):
                 await settings(message)
 
             elif "fly me to " in message.content: # searchAirport init
-                #if checkuserPermissions(str(message.author),"fly me to "):
-                results = searchAirport(str(message.content))
+#                if checkuserPermissions(str(message.author),"fly me to "):
+                results = searchAirport(message.content)
                 await message.reply(results)
-                #else:
-                #    await message.reply("Permission denied")
+#            else:
+#                await message.reply("Permission denied")
 
         # OPENAI
         # openai setkey $KEY$ // Sets openai key
@@ -154,11 +154,7 @@ def help(): # Help menu
     return menu
 
 
-# Settings commands
-
-
-# IP GEOLOCATION
-
+# Settings Menu
 
 async def settings(message): # Bot settings menu
     await message.reply("* SETTINGS *")
@@ -253,7 +249,7 @@ def IPToLocation(ip):
 # Checks user in elevated permissions list
 def checkuserPermissions(user,action):
     print("Checking: " + user)
-    with open("/users.list", "r") as file:
+    with open("./users.list", "r") as file:
         lines = file.readlines()
         for line in lines:
             if str(user) in line:
@@ -276,7 +272,17 @@ def addPermissions(user):
 # INIT
 
 def init():
-    client.run(API_KEY)
-
+    if client.run(API_KEY):
+        print("Connection established")
+        return True
+    else:
+        print("Connection unavailable or API key invalid...")
+        print("Retrying in 3")
+        time.sleep(1)
+        print("Retrying in 2")
+        time.sleep(1)
+        print("Retrying in 1")
+        time.sleep(1)
+        return False
 
 init()
