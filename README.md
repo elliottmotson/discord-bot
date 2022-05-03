@@ -21,6 +21,7 @@ This document plans to cover the funcitonality of the discord bot in as much det
 ## Networking
 
 - Scan %IP OR VALID TLD%
+
 ⋅⋅⋅ Crafts ICMP packet through Scapy and prints outcome as OFFLINE or ONLINE
 
 
@@ -29,7 +30,8 @@ This document plans to cover the funcitonality of the discord bot in as much det
 
 ## Commands
 
-- Call openai using "." operator to feed davinci data - Example command: 
+- Call openai using "." operator to feed davinci data - Example command:
+
 ⋅⋅⋅ .Tell me a story
 - openai setkey $KEY$ // Sets openai key
 - openai showkey      // Displays current openai key
@@ -52,6 +54,7 @@ This document plans to cover the funcitonality of the discord bot in as much det
 ## Commands
 
 - fly me to %IP OR VALID TLD%
+
 ⋅⋅⋅ Uses combination of ipgeo & flight api to fetch closest airport to IP address
 - rapidapi setkey $KEY$ // Sets rapidapi key
 - rapidapi showkey      // Displays current rapidapi key
