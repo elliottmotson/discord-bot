@@ -30,7 +30,7 @@ This document plans to cover the funcitonality of the discord bot in as much det
 
 ## Commands
 
-- Call openai using "." operator to feed davinci data - Example command:
+- Call openai using "." operator to feed davinci data - Example commands:
 1. .Tell me a story
 2. .Shall I fly via Paris or London?
 3. .Open the pod bay doors, HAL
