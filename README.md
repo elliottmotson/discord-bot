@@ -54,8 +54,7 @@ This document plans to cover the funcitonality of the discord bot in as much det
 ## Commands
 
 - fly me to %IP OR VALID TLD%
-
-⋅⋅⋅ Uses combination of ipgeo & flight api to fetch closest airport to IP address
+  Uses combination of ipgeo & flight api to fetch closest airport to IP address⋅⋅⋅
 - rapidapi setkey $KEY$ // Sets rapidapi key
 - rapidapi showkey      // Displays current rapidapi key
 - rapidapi disable      // Disables rapidapi functionality
