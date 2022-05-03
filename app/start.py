@@ -110,11 +110,11 @@ async def on_message(message):
                 await settings(message)
 
             elif "fly me to " in message.content: # searchAirport init
-#                if checkuserPermissions(str(message.author),"fly me to "):
-                results = searchAirport(message.content)
-                await message.reply(results)
-#            else:
-#                await message.reply("Permission denied")
+                if checkuserPermissions(message,"fly me to "):
+                    results = searchAirport(message.content)
+                    await message.reply(results)
+
+#
 
         # OPENAI
         # Call openai using . operator - Example command: .Tell me a story
@@ -169,8 +169,6 @@ async def on_message(message):
                     await message.reply(f"{message.author} is admin")
                 else:
                     await message.reply(f"{message.author} is NOT admin")
-
-
             else:
                 await message.reply("Invalid Command")
 
@@ -275,32 +273,67 @@ def IPToLocation(ip):
 
 # Checks user in elevated permissions list
 def checkuserPermissions(message,action):
-    print("Checking: " + str(message.author))
+    user = str(message.author).strip()
+    print(f"Checking: {user}")
     path = Path("./users.list")
     if path.is_file():
         with open("./users.list", "r") as file:
             lines = file.readlines()
             for line in lines:
-                if message.author in line:
-                    message = " executed " + action
-                    logChat(message.author,message)
+                if user in line:
+                    message = f"{user} executed {action}"
+                    #logChat(message.author,message)
+                    file.close()
                     return True
     else:
         message = "DENIED EXECUTION: " + action
-#        logChat(message.author,message)
-        return False
+        logChat(message.author,message)
         file.close()
+        return False
 
 # Add user to elevated permissions list
 def addPermissions(user):
-    with open("users.list", "a") as file:
+    with open("./users.list", "a") as file:
         file.write(user + "\n")
         file.close()
+        print(f"Added {user} to ./users.list")
 
 
 # INIT
 
+def gencoreFiles():
+    # If path exists
+    # return True
+    # else generate gencoreFiles
+    # ./chat.log
+    # ./users.list
+    userspath = Path("./users.list")
+    print(f"Checking if {userspath} exists")
+
+    if userspath.is_file():
+        print(f"{userspath} exists")
+
+    else:
+        print(f"Generating {str(userspath)}")
+        with open(userspath, "a") as file:
+            file.write("")
+            file.close()
+            print(f"{str(userspath)} generated")
+
+    chatpath = Path(f"./{CHAT_LOG}.log")
+    print(f"Checking if {CHAT_LOG}.log exists")
+    if chatpath.is_file():
+        print(f"{CHAT_LOG}.log exists")
+    else:
+        print(f"Generating {str(chatpath)}")
+        with open(chatpath, "a") as file:
+            file.write("")
+            file.close()
+            print(f"{str(chatpath)} generated")
+
+
 def init():
+    gencoreFiles()
     if client.run(API_KEY):
         print("Connection established")
         return True
@@ -313,5 +346,4 @@ def init():
         print("Retrying in 1")
         time.sleep(1)
         return False
-
 init()
