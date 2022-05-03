@@ -1,8 +1,8 @@
 # Discord Bot - README.md
 
-This document plans to cover the funcitonality of the discord bot in as much detail as possible.
-
 ### DISCLAIMER: THIS IS FOR EDUCATIONAL USE ONLY. I TAKE NO RESPONSIBILITY FOR MISUSE OF SCAPY AND/OR OTHER FUNCTIONALITY BUILT INTO THIS PROGRAM.
+
+This document plans to cover the funcitonality of the discord bot in as much detail as possible.
 
 ---
 
@@ -10,14 +10,20 @@ This document plans to cover the funcitonality of the discord bot in as much det
 
 - OPENAI Davinci-002 functionality
 - Scapy ICMP packet crafting for valid IPs and TLDs
-- 
+- Domain & IP validation for commands
+- IP to Geolocation
+- Local user account permissions list
+- Local chat logging
+- Word swap
+- Help menu
+- Settings menu
 
 ## Networking
 
 - Scan %IP OR VALID TLD%
 ⋅⋅⋅ Crafts ICMP packet through Scapy and prints outcome as OFFLINE or ONLINE
 
-##
+
 
 # OPENAI
 
@@ -29,6 +35,8 @@ This document plans to cover the funcitonality of the discord bot in as much det
 - openai showkey      // Displays current openai key
 - openai disable      // Disables openai functionality
 
+
+
 # IP GEOLOCATION
 
 ## Commands
@@ -36,6 +44,8 @@ This document plans to cover the funcitonality of the discord bot in as much det
 - ipgeo setkey $KEY$ // Sets ipgeo key
 - ipgeo showkey      // Displays current ipgeo key
 - ipgeo disable      // Disables ipgeo functionality
+
+
 
 # RAPIDAPI FLIGHT DATA API
 
