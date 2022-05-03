@@ -4,6 +4,7 @@
 
 This document plans to cover the funcitonality of the discord bot in as much detail as possible.
 
+
 ---
 
 # Features
@@ -20,19 +21,18 @@ This document plans to cover the funcitonality of the discord bot in as much det
 
 ## Networking
 
-- Scan %IP OR VALID TLD%
+- Scan %IP OR VALID TLD% // Crafts ICMP packet through Scapy and prints outcome as OFFLINE or ONLINE
 
-⋅⋅⋅ Crafts ICMP packet through Scapy and prints outcome as OFFLINE or ONLINE
-
-
+---
 
 # OPENAI
 
 ## Commands
 
 - Call openai using "." operator to feed davinci data - Example command:
-
-⋅⋅⋅ .Tell me a story
+1. .Tell me a story
+2. .Shall I fly via Paris or London?
+3. .Open the pod bay doors, HAL
 - openai setkey $KEY$ // Sets openai key
 - openai showkey      // Displays current openai key
 - openai disable      // Disables openai functionality
@@ -53,8 +53,27 @@ This document plans to cover the funcitonality of the discord bot in as much det
 
 ## Commands
 
-- fly me to %IP OR VALID TLD%
-  Uses combination of ipgeo & flight api to fetch closest airport to IP address⋅⋅⋅
+- fly me to %IP OR VALID TLD% // Uses combination of ipgeo & flight api to fetch closest airport to IP address⋅⋅⋅
 - rapidapi setkey $KEY$ // Sets rapidapi key
 - rapidapi showkey      // Displays current rapidapi key
 - rapidapi disable      // Disables rapidapi functionality
+
+
+--- 
+
+
+# Setup
+
+Create a virtual environment
+```python3 -m venv venv```
+
+Install dependencies
+```pip install -r requirements.txt```
+
+Copy .env file - Remember to set your API keys!
+```cp .env.example .env``` 
+
+Start the application (May need sudo due to scapy)
+```python3 ./app/start.py```
+
+
