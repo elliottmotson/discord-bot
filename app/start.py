@@ -110,11 +110,11 @@ async def on_message(message):
                 await settings(message)
 
             elif "fly me to " in message.content: # searchAirport init
-#                if checkuserPermissions(str(message.author),"fly me to "):
-                results = searchAirport(message.content)
-                await message.reply(results)
-#            else:
-#                await message.reply("Permission denied")
+                if checkuserPermissions(message,"fly me to "):
+                    results = searchAirport(message.content)
+                    await message.reply(results)
+
+#
 
         # OPENAI
         # Call openai using . operator - Example command: .Tell me a story
@@ -169,8 +169,6 @@ async def on_message(message):
                     await message.reply(f"{message.author} is admin")
                 else:
                     await message.reply(f"{message.author} is NOT admin")
-
-
             else:
                 await message.reply("Invalid Command")
 
@@ -278,7 +276,6 @@ def checkuserPermissions(message,action):
     user = str(message.author).strip()
     print(f"Checking: {user}")
     path = Path("./users.list")
-
     if path.is_file():
         with open("./users.list", "r") as file:
             lines = file.readlines()
@@ -286,18 +283,20 @@ def checkuserPermissions(message,action):
                 if user in line:
                     message = f"{user} executed {action}"
                     #logChat(message.author,message)
+                    file.close()
                     return True
     else:
-            message = "DENIED EXECUTION: " + action
-                    #        logChat(message.author,message)
-            return False
-            file.close()
+        message = "DENIED EXECUTION: " + action
+        logChat(message.author,message)
+        file.close()
+        return False
 
 # Add user to elevated permissions list
 def addPermissions(user):
-    with open("users.list", "a") as file:
+    with open("./users.list", "a") as file:
         file.write(user + "\n")
         file.close()
+        print(f"Added {user} to ./users.list")
 
 
 # INIT
@@ -322,9 +321,9 @@ def gencoreFiles():
             print(f"{str(userspath)} generated")
 
     chatpath = Path(f"./{CHAT_LOG}.log")
-    print(f"Checking if {CHAT_LOG} exists")
+    print(f"Checking if {CHAT_LOG}.log exists")
     if chatpath.is_file():
-        print(f"{CHAT_LOG} exists")
+        print(f"{CHAT_LOG}.log exists")
     else:
         print(f"Generating {str(chatpath)}")
         with open(chatpath, "a") as file:
