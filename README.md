@@ -4,6 +4,7 @@
 
 This document plans to cover the funcitonality of the discord bot in as much detail as possible.
 
+[SKIP TO SETUP](https://github.com/elliottmotson/discord-bot/blob/documentation-phase-1/README.md#setup)
 
 ---
 
