@@ -9,6 +9,7 @@ import json
 import openai
 from scapy.all import *
 from dotenv import load_dotenv
+from pathlib import Path
 
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
@@ -163,6 +164,13 @@ async def on_message(message):
                 await message.reply(f"RAPIDAPI KEY: {os.getenv('RAPID_API_AVIATION_KEY')}")
             elif message.content in "rapidapi disable":
                 await message.reply("RAPIDAPI DISABLED - FEATURE TO BE COMPLETED")
+            elif message.content == "isadmin":
+                if checkuserPermissions(message,"isadmin"):
+                    await message.reply(f"{message.author} is admin")
+                else:
+                    await message.reply(f"{message.author} is NOT admin")
+
+
             else:
                 await message.reply("Invalid Command")
 
@@ -266,19 +274,21 @@ def IPToLocation(ip):
 ## PERMISSIONS
 
 # Checks user in elevated permissions list
-def checkuserPermissions(user,action):
-    print("Checking: " + user)
-    with open("./users.list", "r") as file:
-        lines = file.readlines()
-        for line in lines:
-            if str(user) in line:
-                message = " executed " + action
-                logChat(user,message)
-                return True
-        else:
-            message = "DENIED EXECUTION: " + action
-            logChat(user,message)
-            return False
+def checkuserPermissions(message,action):
+    print("Checking: " + str(message.author))
+    path = Path("./users.list")
+    if path.is_file():
+        with open("./users.list", "r") as file:
+            lines = file.readlines()
+            for line in lines:
+                if message.author in line:
+                    message = " executed " + action
+                    logChat(message.author,message)
+                    return True
+    else:
+        message = "DENIED EXECUTION: " + action
+#        logChat(message.author,message)
+        return False
         file.close()
 
 # Add user to elevated permissions list
