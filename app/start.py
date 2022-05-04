@@ -398,7 +398,7 @@ def gencoreFiles():
 
 def init(): # Init/main function
 
-    #Generates core files if not exist
+    # Generates core files if not exist
     gencoreFiles()
     if client.run(API_KEY):
         print("Connection established")
