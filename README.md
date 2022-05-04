@@ -24,6 +24,19 @@ This document plans to cover the funcitonality of the discord bot in as much det
 
 - Scan %IP OR VALID TLD% // Crafts ICMP packet through Scapy and prints outcome as OFFLINE or ONLINE
 
+## Utility
+
+Example "1" returns settings infomation in chat
+
+1. Settings // Displays settings menu
+
+2. Display chat log // Reads chat file and returns file contents in chat
+
+3. Delete chat log // Deletes chat log file
+
+4. Hard reset // Deletes chat log file and clears users.list permissions file
+
+
 ---
 
 # OPENAI
