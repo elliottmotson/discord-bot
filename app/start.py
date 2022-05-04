@@ -150,6 +150,15 @@ async def on_message(message):
                     os.remove(logfile) # If logfile exists, delete
                     gencoreFiles()
                     await message.reply(f"{logfile} deleted by {message.author}. Regenerated blank core files")
+            elif message.content == "4": # Hard reset [4]
+                if checkuserPermissions(message, "HARD RESET"):
+                    print(f"{str(message.author)} deleting file")
+                    logfile = CHAT_LOG+".log"
+                    userfile = "./users.list"
+                    os.remove(userfile)
+                    os.remove(logfile) # If file exists, delete
+                    gencoreFiles()
+                    await message.reply(f"HARD RESET triggered by {message.author}. Regenerated blank core files")
 
         # Airport search call
 
@@ -228,7 +237,7 @@ async def on_message(message):
 # Help
 
 def help(): # Help menu
-    menu = "HELP MENU\n\n[1] Settings\n[2] Show Log\n[3] Delete Log"
+    menu = "HELP MENU\n\n[1] Settings\n[2] Show Log\n[3] Delete Log\n[4] Hard Reset"
     return menu
 
 
