@@ -36,7 +36,7 @@ botChannel = "bot" + str(BOT_ID)
 # OpenAI text processing
 
 def ai(text):
-    response = openai.Completion.create(
+    response = openai.Completion.create( # Crafts API response for davinci OpenAI
     engine="text-davinci-002",
     prompt=text,
     temperature=0.4,
@@ -54,7 +54,7 @@ def ai(text):
     return content
 
 
-# RAPIDAPI Aviation
+# RAPIDAPI Aviation call
 
 
 def searchAirport(message):
@@ -73,7 +73,6 @@ def searchAirport(message):
         }
     response = requests.request("GET", url, headers=headers, params=querystring)
     print(headers)
-    #print(response.text)
     data = json.loads(response.text)
     count = 0
 
@@ -101,6 +100,8 @@ async def on_message(message):
             return
         else:
 
+        ## Main keyword triggers ##
+
         # Word Replace
 
             logChat(message.author,message.content) # Log incoming message
@@ -112,7 +113,7 @@ async def on_message(message):
         # Scapy
 
             elif "scan " in message.content: # Scapy init
-                if checkuserPermissions(str(message.author),"scan"):
+                if checkuserPermissions(message,"scan"):
                     results = scan(message.content)
                     await message.reply(results)
                 else:
@@ -142,13 +143,16 @@ async def on_message(message):
         # openai disable // Disables openai functionality
 
             elif message.content in "openai setkey ":
-                message.content.replace("openai setkey","")
-                OPENAI_API_KEY = message.content
-                await message.reply(f"OPENAI KEY CHANGE TO: {os.getenv('OPENAI_API_KEY')}")
+                if checkuserPermissions(message,"openai setkey"):
+                    message.content.replace("openai setkey","")
+                    OPENAI_API_KEY = message.content
+                    await message.reply(f"OPENAI KEY CHANGE TO: {os.getenv('OPENAI_API_KEY')}")
             elif message.content in "openai showkey":
-                await message.reply(f"OPENAI KEY: {os.getenv('OPENAI_API_KEY')}")
+                if checkuserPermissions(message,"openai showkey"):
+                    await message.reply(f"OPENAI KEY: {os.getenv('OPENAI_API_KEY')}")
             elif message.content in "openai disable":
-                await message.reply("OPENAI DISABLED - FEATURE TO BE COMPLETED")
+                if checkuserPermissions(message,"openai disable"):
+                    await message.reply("OPENAI DISABLED - FEATURE TO BE COMPLETED")
             elif message.content.startswith("."):
                 await message.reply(ai(message.content))
 
@@ -160,13 +164,16 @@ async def on_message(message):
 
 
             elif message.content in "ipgeo setkey ":
-                message.content.replace("ipgeo setkey","")
-                IP_GEOLOCATION_API_KEY = message.content
-                await message.reply(f"IPGEO KEY CHANGE TO: {os.getenv('IP_GEOLOCATION_API_KEY')}")
+                if checkuserPermissions(message,"ipgeo setkey"):
+                    message.content.replace("ipgeo setkey","")
+                    IP_GEOLOCATION_API_KEY = message.content
+                    await message.reply(f"IPGEO KEY CHANGE TO: {os.getenv('IP_GEOLOCATION_API_KEY')}")
             elif message.content in "ipgeo showkey":
-                await message.reply(f"IPGEO KEY: {os.getenv('IP_GEOLOCATION_API_KEY')}")
+                if checkuserPermissions(message,"ipgeo showkey"):
+                    await message.reply(f"IPGEO KEY: {os.getenv('IP_GEOLOCATION_API_KEY')}")
             elif message.content in "IPGEO disable":
-                await message.reply("IPGEO DISABLED - FEATURE TO BE COMPLETED")
+                if checkuserPermissions(message,"ipgeo disable"):
+                    await message.reply("IPGEO DISABLED - FEATURE TO BE COMPLETED")
 
 
         # RAPID API
@@ -216,6 +223,7 @@ async def settings(message): # Bot settings menu
 ## PORT SCANNER
 
 # ICMP packet to validated IP or domain name
+
 def scan(message):
     message = message.strip("scan ")
     if validateIP(message):
@@ -248,6 +256,7 @@ def wordReplace(word,link,message):
 ## UTILITY
 
 # Validates IP with regex
+
 def validateIP(ip):
     ipv4 = re.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") # Loads ipv4 regex validation string
     domain = re.compile("^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$") # Regex to match most TLDs
@@ -268,6 +277,7 @@ def domaintoip(ip):
     return str(socket.gethostbyname(ip))
 
 # Logs message to file
+
 def logChat(user,message):
     data = str(user) + ": " + message
     print(data)
@@ -353,7 +363,9 @@ def gencoreFiles():
             print(f"{str(chatpath)} generated")
 
 
-def init(): # Init main function
+def init(): # Init/main function
+
+    #Generates core files if not exist
     gencoreFiles()
     if client.run(API_KEY):
         print("Connection established")
@@ -368,4 +380,6 @@ def init(): # Init main function
         time.sleep(1)
         init()
         return False
+
+
 init()
