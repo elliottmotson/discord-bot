@@ -124,8 +124,28 @@ async def on_message(message):
             elif message.content == "help":
                 await message.reply(help())
 
-            elif message.content == "1":
+            elif message.content == "1": # Load settings [1]
                 await settings(message)
+
+            elif message.content == "2": # Show log [2]
+            # Read log file, return as discord messages
+                if checkuserPermissions(message, "View log"):
+                    path = Path(f"./{CHAT_LOG}.log")
+                    if path.is_file():
+                        with open(f"./{CHAT_LOG}.log", "r") as file:
+                            lines = file.readlines()
+                            await message.reply(f"PRINTING {CHAT_LOG} HISTORY")
+                            for line in lines:
+                                data = line + "\n"
+                                await message.reply(str(line))
+
+            elif message.content == "3": # Delete log [3]
+                if checkuserPermissions(message, "Delete log"):
+                    print(f"{str(message.author)} deleting file")
+                    logfile = CHAT_LOG+".log"
+                    os.remove(logfile) # If logfile exists, delete
+                    gencoreFiles()
+                    await message.reply(f"{logfile} deleted by {message.author}. Regenerated blank core files")
 
         # Airport search call
 
