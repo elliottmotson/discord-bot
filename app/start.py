@@ -249,8 +249,8 @@ def wordReplace(word,link,message):
 
 # Validates IP with regex
 def validateIP(ip):
-    ipv4 = re.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") # Loads ipv4 regex
-    domain = re.compile("^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$") # Regex to match most domains
+    ipv4 = re.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") # Loads ipv4 regex validation string
+    domain = re.compile("^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$") # Regex to match most TLDs
     isdomain = domain.match(ip)
     isipv4 = ipv4.match(ip) # Is users message valid ipv4 address
     try:
@@ -279,7 +279,7 @@ def logChat(user,message):
 # Get MaxMind latlong from ip
 
 def IPToLocation(ip):
-    url = "https://api.ipgeolocation.io/ipgeo?apiKey="+IP_GEOLOCATION_API_KEY+"&ip="+ip#+"&fields=city"
+    url = "https://api.ipgeolocation.io/ipgeo?apiKey="+IP_GEOLOCATION_API_KEY+"&ip="+ip # IP GEOLOCATION
     response = requests.request("GET", url)
     data = response.text
     parsed = json.loads(data)
@@ -331,7 +331,7 @@ def gencoreFiles():
     userspath = Path("./users.list")
     print(f"Checking if {userspath} exists")
 
-    if userspath.is_file():
+    if userspath.is_file(): # If user admin file exists
         print(f"{userspath} exists")
 
     else:
@@ -343,7 +343,7 @@ def gencoreFiles():
 
     chatpath = Path(f"./{CHAT_LOG}.log")
     print(f"Checking if {CHAT_LOG}.log exists")
-    if chatpath.is_file():
+    if chatpath.is_file(): # If chat log file exists
         print(f"{CHAT_LOG}.log exists")
     else:
         print(f"Generating {str(chatpath)}")
@@ -353,7 +353,7 @@ def gencoreFiles():
             print(f"{str(chatpath)} generated")
 
 
-def init():
+def init(): # Init main function
     gencoreFiles()
     if client.run(API_KEY):
         print("Connection established")
@@ -366,5 +366,6 @@ def init():
         time.sleep(1)
         print("Retrying in 1")
         time.sleep(1)
+        init()
         return False
 init()
