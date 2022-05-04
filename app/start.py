@@ -11,23 +11,32 @@ from scapy.all import *
 from dotenv import load_dotenv
 from pathlib import Path
 
+# Environment vars
+
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
 CHAT_LOG = os.getenv('CHAT_LOG')
 BOT_ID = os.getenv('BOT_ID')
 DISCORD_GUILD = os.getenv('DISCORD_GUILD')
 
+# API Keys
+
 IP_GEOLOCATION_API_KEY = os.getenv('IP_GEOLOCATION_API_KEY')
 RAPID_API_AVIATION_KEY = os.getenv('RAPID_API_AVIATION_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 openai.api_key = OPENAI_API_KEY
 
+# Discord object vars
 
 client = discord.Client()
 botChannel = "bot" + str(BOT_ID)
 
+## API functionality
+
+# OpenAI text processing
+
 def ai(text):
-    response = openai.Completion.create(
+    response = openai.Completion.create( # Crafts API response for davinci OpenAI
     engine="text-davinci-002",
     prompt=text,
     temperature=0.4,
@@ -45,7 +54,8 @@ def ai(text):
     return content
 
 
-# API
+# RAPIDAPI Aviation call
+
 
 def searchAirport(message):
     ip = message.replace("fly me to ","")
@@ -63,7 +73,6 @@ def searchAirport(message):
         }
     response = requests.request("GET", url, headers=headers, params=querystring)
     print(headers)
-    #print(response.text)
     data = json.loads(response.text)
     count = 0
 
@@ -90,68 +99,118 @@ async def on_message(message):
         if message.author.bot:  # Bot doesn't reply to itself
             return
         else:
+
+        ## Main keyword triggers ##
+
+        # Word Replace
+
             logChat(message.author,message.content) # Log incoming message
-            word = "onions" # wordReplace functionality
+            word = "onions" # wordReplace keyword
             if word in message.content:
                 link = "cheese"
                 await message.reply(wordReplace(word,link,message))
 
+        # Scapy
+
             elif "scan " in message.content: # Scapy init
-                if checkuserPermissions(str(message.author),"scan"):
+                if checkuserPermissions(message,"scan"):
                     results = scan(message.content)
                     await message.reply(results)
                 else:
                     await message.reply("Permission denied")
 
+        # Menu call
+
             elif message.content == "help":
                 await message.reply(help())
 
-            elif message.content == "1":
+            elif message.content == "1": # Load settings [1]
                 await settings(message)
+
+            elif message.content == "2": # Show log [2]
+            # Read log file, return as discord messages
+                data = []
+                if checkuserPermissions(message, "View log"):
+                    path = Path(f"./{CHAT_LOG}.log")
+                    if path.is_file():
+                        with open(f"./{CHAT_LOG}.log", "r") as file:
+                            lines = file.readlines()
+                            await message.reply(f"PRINTING {CHAT_LOG.upper()} HISTORY")
+                            for line in lines:
+                                data.append(line.strip()+"\n")
+                                result = "".join(data)
+                                print(result)
+                            await message.reply(result)
+
+
+            elif message.content == "3": # Delete log [3]
+                if checkuserPermissions(message, "Delete log"):
+                    print(f"{str(message.author)} deleting file")
+                    logfile = CHAT_LOG+".log"
+                    os.remove(logfile) # If logfile exists, delete
+                    gencoreFiles()
+                    await message.reply(f"{logfile} deleted by {message.author}. Regenerated blank core files")
+            elif message.content == "4": # Hard reset [4]
+                if checkuserPermissions(message, "HARD RESET"):
+                    print(f"{str(message.author)} deleting file")
+                    logfile = CHAT_LOG+".log"
+                    userfile = "./users.list"
+                    os.remove(userfile)
+                    os.remove(logfile) # If file exists, delete
+                    gencoreFiles()
+                    await message.reply(f"HARD RESET triggered by {message.author}. Regenerated blank core files")
+
+        # Airport search call
 
             elif "fly me to " in message.content: # searchAirport init
                 if checkuserPermissions(message,"fly me to "):
                     results = searchAirport(message.content)
                     await message.reply(results)
 
-#
+# API calls
 
         # OPENAI
         # Call openai using . operator - Example command: .Tell me a story
-        # openai setkey $KEY$ // Sets openai key
+        # openai setkey %KEY% // Sets openai key
         # openai showkey // Displays current openai key
         # openai disable // Disables openai functionality
 
-            elif message.content in "openai setkey ":
-                message.content.replace("openai setkey","")
-                OPENAI_API_KEY = message.content
-                await message.reply(f"OPENAI KEY CHANGE TO: {os.getenv('OPENAI_API_KEY')}")
-            elif message.content in "openai showkey":
-                await message.reply(f"OPENAI KEY: {os.getenv('OPENAI_API_KEY')}")
-            elif message.content in "openai disable":
-                await message.reply("OPENAI DISABLED - FEATURE TO BE COMPLETED")
+            elif "openai setkey " in message.content:
+                if checkuserPermissions(message,"openai setkey"):
+                    message.content.replace("openai setkey","")
+                    OPENAI_API_KEY = message.content
+                    await message.reply(f"OPENAI KEY CHANGE TO: {os.getenv('OPENAI_API_KEY')}")
+            elif "openai showkey" in message.content:
+                if checkuserPermissions(message,"openai showkey"):
+                    await message.reply(f"OPENAI KEY: {os.getenv('OPENAI_API_KEY')}")
+            elif "openai disable" in message.content:
+                if checkuserPermissions(message,"openai disable"):
+                    await message.reply("OPENAI DISABLED - FEATURE TO BE COMPLETED")
             elif message.content.startswith("."):
                 await message.reply(ai(message.content))
 
 
         # IP GEOLOCATION
-        # ipgeo setkey $KEY$ // Sets ipgeo key
+        # ipgeo setkey %KEY% // Sets ipgeo key
         # ipgeo showkey // Displays current ipgeo key
         # ipgeo disable // Disables ipgeo functionality
 
 
-            elif message.content in "ipgeo setkey ":
-                message.content.replace("ipgeo setkey","")
-                IP_GEOLOCATION_API_KEY = message.content
-                await message.reply(f"IPGEO KEY CHANGE TO: {os.getenv('IP_GEOLOCATION_API_KEY')}")
-            elif message.content in "ipgeo showkey":
-                await message.reply(f"IPGEO KEY: {os.getenv('IP_GEOLOCATION_API_KEY')}")
-            elif message.content in "IPGEO disable":
-                await message.reply("IPGEO DISABLED - FEATURE TO BE COMPLETED")
+            elif "ipgeo setkey " in message.content:
+                if checkuserPermissions(message,"ipgeo setkey"):
+                    message.content.replace("ipgeo setkey","")
+                    IP_GEOLOCATION_API_KEY = message.content
+                    await message.reply(f"IPGEO KEY CHANGE TO: {os.getenv('IP_GEOLOCATION_API_KEY')}")
+            elif "ipgeo showkey" in message.content:
+                if checkuserPermissions(message,"ipgeo showkey"):
+                    await message.reply(f"IPGEO KEY: {os.getenv('IP_GEOLOCATION_API_KEY')}")
+            elif "ipgeo disable" in message.content:
+                if checkuserPermissions(message,"ipgeo disable"):
+                    await message.reply("IPGEO DISABLED - FEATURE TO BE COMPLETED")
 
 
         # RAPID API
-        # rapidapi setkey $KEY$ // Sets rapidapi key
+        # rapidapi setkey %KEY% // Sets rapidapi key
         # rapidapi showkey // Displays current rapidapi key
         # rapidapi disable // Disables openai functionality
 
@@ -170,13 +229,15 @@ async def on_message(message):
                 else:
                     await message.reply(f"{message.author} is NOT admin")
             else:
-                await message.reply("Invalid Command")
+                await message.reply("Invalid Command") # If user input doesn't match anything in on_message()
 
 
-# MENUS
+## MENUS
+
+# Help
 
 def help(): # Help menu
-    menu = "HELP MENU\n\n[1] Settings\n[2] Show Log\n[3] Delete Log"
+    menu = "HELP MENU\n\n[1] Settings\n[2] Show Log\n[3] Delete Log\n[4] Hard Reset"
     return menu
 
 
@@ -192,9 +253,10 @@ async def settings(message): # Bot settings menu
 )
 
 
-# PORT SCANNER
+## PORT SCANNER
 
 # ICMP packet to validated IP or domain name
+
 def scan(message):
     message = message.strip("scan ")
     if validateIP(message):
@@ -227,9 +289,10 @@ def wordReplace(word,link,message):
 ## UTILITY
 
 # Validates IP with regex
+
 def validateIP(ip):
-    ipv4 = re.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") # Loads ipv4 regex
-    domain = re.compile("^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$") # Regex to match most domains
+    ipv4 = re.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") # Loads ipv4 regex validation string
+    domain = re.compile("^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$") # Regex to match most TLDs
     isdomain = domain.match(ip)
     isipv4 = ipv4.match(ip) # Is users message valid ipv4 address
     try:
@@ -247,6 +310,7 @@ def domaintoip(ip):
     return str(socket.gethostbyname(ip))
 
 # Logs message to file
+
 def logChat(user,message):
     data = str(user) + ": " + message
     print(data)
@@ -258,7 +322,7 @@ def logChat(user,message):
 # Get MaxMind latlong from ip
 
 def IPToLocation(ip):
-    url = "https://api.ipgeolocation.io/ipgeo?apiKey="+IP_GEOLOCATION_API_KEY+"&ip="+ip#+"&fields=city"
+    url = "https://api.ipgeolocation.io/ipgeo?apiKey="+IP_GEOLOCATION_API_KEY+"&ip="+ip # IP GEOLOCATION
     response = requests.request("GET", url)
     data = response.text
     parsed = json.loads(data)
@@ -299,7 +363,7 @@ def addPermissions(user):
         print(f"Added {user} to ./users.list")
 
 
-# INIT
+## INIT
 
 def gencoreFiles():
     # If path exists
@@ -310,7 +374,7 @@ def gencoreFiles():
     userspath = Path("./users.list")
     print(f"Checking if {userspath} exists")
 
-    if userspath.is_file():
+    if userspath.is_file(): # If user admin file exists
         print(f"{userspath} exists")
 
     else:
@@ -322,7 +386,7 @@ def gencoreFiles():
 
     chatpath = Path(f"./{CHAT_LOG}.log")
     print(f"Checking if {CHAT_LOG}.log exists")
-    if chatpath.is_file():
+    if chatpath.is_file(): # If chat log file exists
         print(f"{CHAT_LOG}.log exists")
     else:
         print(f"Generating {str(chatpath)}")
@@ -332,7 +396,9 @@ def gencoreFiles():
             print(f"{str(chatpath)} generated")
 
 
-def init():
+def init(): # Init/main function
+
+    #Generates core files if not exist
     gencoreFiles()
     if client.run(API_KEY):
         print("Connection established")
@@ -345,5 +411,8 @@ def init():
         time.sleep(1)
         print("Retrying in 1")
         time.sleep(1)
+        init()
         return False
+
+
 init()
