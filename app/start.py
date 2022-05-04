@@ -11,20 +11,29 @@ from scapy.all import *
 from dotenv import load_dotenv
 from pathlib import Path
 
+# Environment vars
+
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
 CHAT_LOG = os.getenv('CHAT_LOG')
 BOT_ID = os.getenv('BOT_ID')
 DISCORD_GUILD = os.getenv('DISCORD_GUILD')
 
+# API Keys
+
 IP_GEOLOCATION_API_KEY = os.getenv('IP_GEOLOCATION_API_KEY')
 RAPID_API_AVIATION_KEY = os.getenv('RAPID_API_AVIATION_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 openai.api_key = OPENAI_API_KEY
 
+# Discord object vars
 
 client = discord.Client()
 botChannel = "bot" + str(BOT_ID)
+
+## API functionality
+
+# OpenAI text processing
 
 def ai(text):
     response = openai.Completion.create(
@@ -45,7 +54,8 @@ def ai(text):
     return content
 
 
-# API
+# RAPIDAPI Aviation
+
 
 def searchAirport(message):
     ip = message.replace("fly me to ","")
@@ -90,11 +100,16 @@ async def on_message(message):
         if message.author.bot:  # Bot doesn't reply to itself
             return
         else:
+
+        # Word Replace
+
             logChat(message.author,message.content) # Log incoming message
-            word = "onions" # wordReplace functionality
+            word = "onions" # wordReplace keyword
             if word in message.content:
                 link = "cheese"
                 await message.reply(wordReplace(word,link,message))
+
+        # Scapy
 
             elif "scan " in message.content: # Scapy init
                 if checkuserPermissions(str(message.author),"scan"):
@@ -103,22 +118,26 @@ async def on_message(message):
                 else:
                     await message.reply("Permission denied")
 
+        # Menu call
+
             elif message.content == "help":
                 await message.reply(help())
 
             elif message.content == "1":
                 await settings(message)
 
+        # Airport search call
+
             elif "fly me to " in message.content: # searchAirport init
                 if checkuserPermissions(message,"fly me to "):
                     results = searchAirport(message.content)
                     await message.reply(results)
 
-#
+# API calls
 
         # OPENAI
         # Call openai using . operator - Example command: .Tell me a story
-        # openai setkey $KEY$ // Sets openai key
+        # openai setkey %KEY% // Sets openai key
         # openai showkey // Displays current openai key
         # openai disable // Disables openai functionality
 
@@ -135,7 +154,7 @@ async def on_message(message):
 
 
         # IP GEOLOCATION
-        # ipgeo setkey $KEY$ // Sets ipgeo key
+        # ipgeo setkey %KEY% // Sets ipgeo key
         # ipgeo showkey // Displays current ipgeo key
         # ipgeo disable // Disables ipgeo functionality
 
@@ -151,7 +170,7 @@ async def on_message(message):
 
 
         # RAPID API
-        # rapidapi setkey $KEY$ // Sets rapidapi key
+        # rapidapi setkey %KEY% // Sets rapidapi key
         # rapidapi showkey // Displays current rapidapi key
         # rapidapi disable // Disables openai functionality
 
@@ -170,10 +189,12 @@ async def on_message(message):
                 else:
                     await message.reply(f"{message.author} is NOT admin")
             else:
-                await message.reply("Invalid Command")
+                await message.reply("Invalid Command") # If user input doesn't match anything in on_message()
 
 
-# MENUS
+## MENUS
+
+# Help
 
 def help(): # Help menu
     menu = "HELP MENU\n\n[1] Settings\n[2] Show Log\n[3] Delete Log"
@@ -192,7 +213,7 @@ async def settings(message): # Bot settings menu
 )
 
 
-# PORT SCANNER
+## PORT SCANNER
 
 # ICMP packet to validated IP or domain name
 def scan(message):
@@ -299,7 +320,7 @@ def addPermissions(user):
         print(f"Added {user} to ./users.list")
 
 
-# INIT
+## INIT
 
 def gencoreFiles():
     # If path exists
