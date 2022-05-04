@@ -216,13 +216,16 @@ async def on_message(message):
 
 
             elif message.content in "rapidapi setkey ":
-                message.content.replace("rapidapi setkey","")
-                RAPID_API_AVIATION_KEY = message.content
-                await message.reply(f"RAPIDAPI KEY CHANGE TO: {os.getenv('RAPID_API_AVIATION_KEY')}")
+                if checkuserPermissions(message,"rapidapi setkey")
+                    message.content.replace("rapidapi setkey","")
+                    RAPID_API_AVIATION_KEY = message.content
+                    await message.reply(f"RAPIDAPI KEY CHANGE TO: {os.getenv('RAPID_API_AVIATION_KEY')}")
             elif message.content in "rapidapi showkey":
-                await message.reply(f"RAPIDAPI KEY: {os.getenv('RAPID_API_AVIATION_KEY')}")
+                if checkuserPermissions(message,"rapidapi showkey")
+                    await message.reply(f"RAPIDAPI KEY: {os.getenv('RAPID_API_AVIATION_KEY')}")
             elif message.content in "rapidapi disable":
-                await message.reply("RAPIDAPI DISABLED - FEATURE TO BE COMPLETED")
+                if checkuserPermissions(message,"rapidapi disable")
+                    await message.reply("RAPIDAPI DISABLED - FEATURE TO BE COMPLETED")
             elif message.content == "isadmin":
                 if checkuserPermissions(message,"isadmin"):
                     await message.reply(f"{message.author} is admin")
