@@ -129,15 +129,19 @@ async def on_message(message):
 
             elif message.content == "2": # Show log [2]
             # Read log file, return as discord messages
+                data = []
                 if checkuserPermissions(message, "View log"):
                     path = Path(f"./{CHAT_LOG}.log")
                     if path.is_file():
                         with open(f"./{CHAT_LOG}.log", "r") as file:
                             lines = file.readlines()
-                            await message.reply(f"PRINTING {CHAT_LOG} HISTORY")
+                            await message.reply(f"PRINTING {CHAT_LOG.upper()} HISTORY")
                             for line in lines:
-                                data = line + "\n"
-                                await message.reply(str(line))
+                                data.append(line.strip()+"\n")
+                                result = "".join(data)
+                                print(result)
+                            await message.reply(result)
+
 
             elif message.content == "3": # Delete log [3]
                 if checkuserPermissions(message, "Delete log"):
@@ -162,15 +166,15 @@ async def on_message(message):
         # openai showkey // Displays current openai key
         # openai disable // Disables openai functionality
 
-            elif message.content in "openai setkey ":
+            elif "openai setkey " in message.content:
                 if checkuserPermissions(message,"openai setkey"):
                     message.content.replace("openai setkey","")
                     OPENAI_API_KEY = message.content
                     await message.reply(f"OPENAI KEY CHANGE TO: {os.getenv('OPENAI_API_KEY')}")
-            elif message.content in "openai showkey":
+            elif "openai showkey" in message.content:
                 if checkuserPermissions(message,"openai showkey"):
                     await message.reply(f"OPENAI KEY: {os.getenv('OPENAI_API_KEY')}")
-            elif message.content in "openai disable":
+            elif "openai disable" in message.content:
                 if checkuserPermissions(message,"openai disable"):
                     await message.reply("OPENAI DISABLED - FEATURE TO BE COMPLETED")
             elif message.content.startswith("."):
@@ -183,15 +187,15 @@ async def on_message(message):
         # ipgeo disable // Disables ipgeo functionality
 
 
-            elif message.content in "ipgeo setkey ":
+            elif "ipgeo setkey " in message.content:
                 if checkuserPermissions(message,"ipgeo setkey"):
                     message.content.replace("ipgeo setkey","")
                     IP_GEOLOCATION_API_KEY = message.content
                     await message.reply(f"IPGEO KEY CHANGE TO: {os.getenv('IP_GEOLOCATION_API_KEY')}")
-            elif message.content in "ipgeo showkey":
+            elif "ipgeo showkey" in message.content:
                 if checkuserPermissions(message,"ipgeo showkey"):
                     await message.reply(f"IPGEO KEY: {os.getenv('IP_GEOLOCATION_API_KEY')}")
-            elif message.content in "IPGEO disable":
+            elif "ipgeo disable" in message.content:
                 if checkuserPermissions(message,"ipgeo disable"):
                     await message.reply("IPGEO DISABLED - FEATURE TO BE COMPLETED")
 
