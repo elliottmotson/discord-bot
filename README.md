@@ -47,7 +47,7 @@ Example "1" returns settings infomation in chat
 1. .Tell me a story
 2. .Shall I fly via Paris or London?
 3. .Open the pod bay doors, HAL
-- openai setkey $KEY$ // Sets openai key
+- openai setkey %KEY% // Sets openai key
 - openai showkey      // Displays current openai key
 - openai disable      // Disables openai functionality
 
@@ -57,7 +57,7 @@ Example "1" returns settings infomation in chat
 
 ## Commands
 
-- ipgeo setkey $KEY$ // Sets ipgeo key
+- ipgeo setkey %KEY% // Sets ipgeo key
 - ipgeo showkey      // Displays current ipgeo key
 - ipgeo disable      // Disables ipgeo functionality
 
@@ -68,7 +68,7 @@ Example "1" returns settings infomation in chat
 ## Commands
 
 - fly me to %IP OR VALID TLD% // Uses combination of ipgeo & flight api to fetch closest airport to IP address⋅⋅⋅
-- rapidapi setkey $KEY$ // Sets rapidapi key
+- rapidapi setkey %KEY% // Sets rapidapi key
 - rapidapi showkey      // Displays current rapidapi key
 - rapidapi disable      // Disables rapidapi functionality
 
